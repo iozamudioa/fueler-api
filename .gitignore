@@ -1,0 +1,15 @@
+.idea/
+.settings/
+target/
+.env
+*.iml
+# Fueler configuration
+/src/main/resources/application.yml
+/src/main/resources/application-prod.yml
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+.vscode/
