@@ -4,9 +4,11 @@ package net.iozamudioa.fueler.infrastructure.adapters.in.web.mapper;
 import org.springframework.stereotype.Component;
 
 import net.iozamudioa.fueler.domain.ApprovedDevice;
+import net.iozamudioa.fueler.domain.AuthorizedDevice;
 import net.iozamudioa.fueler.domain.Device;
 import net.iozamudioa.fueler.infrastructure.adapters.in.web.model.request.CreateDevice;
 import net.iozamudioa.fueler.infrastructure.adapters.in.web.model.response.ApprovedDeviceResponse;
+import net.iozamudioa.fueler.infrastructure.adapters.in.web.model.response.AuthorizedDeviceResponse;
 import net.iozamudioa.fueler.infrastructure.adapters.in.web.model.response.DeviceResponse;
 
 @Component
@@ -39,6 +41,17 @@ public class DeviceWebMapper {
         return new ApprovedDeviceResponse(
                 approved.deviceId(),
                 approved.clientId(),
-                approved.token());
+                approved.otp(),
+                approved.expiresAt());
     }
+
+    public AuthorizedDeviceResponse toAuthorizedResponse(
+            AuthorizedDevice authorized) {
+
+        return new AuthorizedDeviceResponse(
+                authorized.deviceId(),
+                authorized.clientId(),
+                authorized.token());
+    }
+
 }

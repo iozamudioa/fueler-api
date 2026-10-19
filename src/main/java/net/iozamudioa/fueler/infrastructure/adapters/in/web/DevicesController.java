@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import net.iozamudioa.fueler.application.ports.in.DeviceInputPort;
 import net.iozamudioa.fueler.domain.Device;
 import net.iozamudioa.fueler.infrastructure.adapters.in.web.mapper.DeviceWebMapper;
+import net.iozamudioa.fueler.infrastructure.adapters.in.web.model.request.AuthorizeDevice;
 import net.iozamudioa.fueler.infrastructure.adapters.in.web.model.request.CreateDevice;
+import net.iozamudioa.fueler.infrastructure.adapters.in.web.model.response.AuthorizedDeviceResponse;
 import net.iozamudioa.fueler.infrastructure.adapters.in.web.model.response.DeviceResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,33 +29,43 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/devices")
 public class DevicesController {
 
-    private final DeviceInputPort deviceInputPort;
-    private final DeviceWebMapper mapper;
+        private final DeviceInputPort deviceInputPort;
+        private final DeviceWebMapper mapper;
 
-    public DevicesController(
-            DeviceInputPort deviceInputPort,
-            DeviceWebMapper mapper) {
+        public DevicesController(
+                        DeviceInputPort deviceInputPort,
+                        DeviceWebMapper mapper) {
 
-        this.deviceInputPort = deviceInputPort;
-        this.mapper = mapper;
-    }
+                this.deviceInputPort = deviceInputPort;
+                this.mapper = mapper;
+        }
 
-    @Operation(summary = "Registrar dispositivo", description = "Registra una instalación de Fueler "
-            + "para solicitar autorización administrativa.")
-    @SecurityRequirements
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Solicitud de registro creada"),
-            @ApiResponse(responseCode = "400", description = "Datos de registro inválidos")
-    })
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public DeviceResponse create(
-            @Valid @RequestBody CreateDevice request) {
+        @Operation(summary = "Registrar dispositivo", description = "Registra una instalación de Fueler "
+                        + "para solicitar autorización administrativa.")
+        @SecurityRequirements
+        @ApiResponses({
+                        @ApiResponse(responseCode = "201", description = "Solicitud de registro creada"),
+                        @ApiResponse(responseCode = "400", description = "Datos de registro inválidos")
+        })
+        @PostMapping
+        @ResponseStatus(HttpStatus.CREATED)
+        public DeviceResponse create(
+                        @Valid @RequestBody CreateDevice request) {
 
-        Device device = deviceInputPort.request(
-                mapper.toInstallationId(request),
-                mapper.toLabel(request));
+                Device device = deviceInputPort.request(
+                                mapper.toInstallationId(request),
+                                mapper.toLabel(request));
 
-        return mapper.toResponse(device);
-    }
+                return mapper.toResponse(device);
+        }
+
+        @PostMapping("/authorize")
+        public AuthorizedDeviceResponse authorize(
+                        @Valid @RequestBody AuthorizeDevice request) {
+
+                return mapper.toAuthorizedResponse(
+                                deviceInputPort.authorize(
+                                                request.deviceId(),
+                                                request.otp()));
+        }
 }

@@ -15,6 +15,7 @@ public record Device(
 
     public enum Status {
         PENDING,
+        APPROVED,
         ACTIVE,
         REVOKED
     }

@@ -3,6 +3,7 @@ package net.iozamudioa.fueler.infrastructure.config;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,7 +26,8 @@ public class SecurityConfig {
                 "/v3/api-docs/**",
                 "/v3/api-docs.yaml")
             .permitAll()
-            .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/devices").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/devices").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/devices/authorize").permitAll()
             .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
             .requestMatchers("/api/v1/**").hasRole("DEVICE")
             .anyRequest().denyAll())

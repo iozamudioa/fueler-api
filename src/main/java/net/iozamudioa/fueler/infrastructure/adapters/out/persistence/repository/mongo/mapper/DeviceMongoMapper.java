@@ -18,7 +18,10 @@ public class DeviceMongoMapper {
                 device.status(),
                 device.tokenHash(),
                 device.createdAt(),
-                device.approvedAt());
+                device.approvedAt(),
+                null,
+                null,
+                null);
     }
 
     public Device toDomain(DeviceDocument document) {

@@ -12,21 +12,27 @@ import net.iozamudioa.fueler.domain.Device.Status;
 @Document(collection = "devices")
 public record DeviceDocument(
 
-        @Id String id,
+                @Id String id,
 
-        @Indexed(unique = true) String installationId,
+                @Indexed(unique = true) String installationId,
 
-        String label,
+                String label,
 
-        String clientId,
+                String clientId,
 
-        Status status,
+                Status status,
 
-        @Indexed(unique = true, sparse = true) String tokenHash,
+                @Indexed(unique = true, sparse = true) String tokenHash,
 
-        Instant createdAt,
+                Instant createdAt,
 
-        Instant approvedAt
+                Instant approvedAt,
+
+                String otpHash,
+
+                Instant otpExpiresAt,
+
+                Integer otpAttempts
 
 ) {
 }
