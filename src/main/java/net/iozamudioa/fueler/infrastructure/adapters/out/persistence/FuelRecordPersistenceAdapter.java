@@ -23,7 +23,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import net.iozamudioa.fueler.application.ports.out.FuelRecordOutputPort;
 import net.iozamudioa.fueler.domain.FuelPriceSuggestion;
@@ -127,7 +126,6 @@ public class FuelRecordPersistenceAdapter implements FuelRecordOutputPort {
         }
 
         @Override
-        @Transactional
         public FuelRecord update(
                         FuelRecord record,
                         Long expectedVersion,
