@@ -42,6 +42,7 @@ public interface FuelRecordOutputPort {
         Optional<FuelPriceSuggestion> findLatestPrice(
                         String clientId,
                         String gasStationReference,
-                        String fuelType);
+                        String fuelType,
+                        LocalDate date);
 
 }

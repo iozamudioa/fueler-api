@@ -330,7 +330,8 @@ public class FuelRecordPersistenceAdapter implements FuelRecordOutputPort {
         public Optional<FuelPriceSuggestion> findLatestPrice(
                         String clientId,
                         String gasStationReference,
-                        String fuelType) {
+                        String fuelType,
+                        LocalDate date) {
 
                 Query query = new Query();
 
@@ -338,10 +339,12 @@ public class FuelRecordPersistenceAdapter implements FuelRecordOutputPort {
                                 Criteria.where("clientId").is(clientId)
                                                 .and("gasStationReference").is(gasStationReference)
                                                 .and("fuelType").is(fuelType)
+                                                .and("date").lte(date)
                                                 .and("pricePerLiter").gt(0));
 
                 query.with(
                                 Sort.by(
+                                                Sort.Order.desc("date"),
                                                 Sort.Order.desc("createdAt"),
                                                 Sort.Order.desc("_id")));
 

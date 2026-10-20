@@ -116,12 +116,14 @@ public class FuelRecordController {
         public ResponseEntity<FuelPriceResponse> findLatestPrice(
                         @AuthenticationPrincipal DevicePrincipal principal,
                         @RequestParam String gasStationReference,
-                        @RequestParam String fuelType) {
+                        @RequestParam String fuelType,
+                        @RequestParam @DateTimeFormat(pattern = "dd-MM-yy") LocalDate date) {
 
                 return fuelRecordInputPort.findLatestPrice(
                                 principal.clientId(),
                                 gasStationReference,
-                                fuelType)
+                                fuelType,
+                                date)
                                 .map(mapper::toPriceResponse)
                                 .map(ResponseEntity::ok)
                                 .orElseGet(() -> ResponseEntity.noContent().build());

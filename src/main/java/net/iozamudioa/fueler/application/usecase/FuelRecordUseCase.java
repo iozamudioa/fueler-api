@@ -3,6 +3,7 @@ package net.iozamudioa.fueler.application.usecase;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -206,17 +207,22 @@ public class FuelRecordUseCase implements FuelRecordInputPort {
         public Optional<FuelPriceSuggestion> findLatestPrice(
                         String clientId,
                         String gasStationReference,
-                        String fuelType) {
+                        String fuelType,
+                        LocalDate date) {
 
                 if (clientId == null || clientId.isBlank()) {
-                        throw new IllegalArgumentException(
-                                        "Client ID is required");
+                        throw new IllegalArgumentException("Client ID is required");
+                }
+
+                if (date == null) {
+                        throw new IllegalArgumentException("Date is required");
                 }
 
                 return fuelRecordOutputPort.findLatestPrice(
                                 clientId,
                                 ReferenceNormalizer.normalize(gasStationReference),
-                                ReferenceNormalizer.normalize(fuelType));
+                                ReferenceNormalizer.normalize(fuelType),
+                                date);
         }
 
         private String validateGasStation(

@@ -1,5 +1,6 @@
 package net.iozamudioa.fueler.application.ports.in;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import net.iozamudioa.fueler.application.command.CreateFuelRecordCommand;
@@ -12,17 +13,18 @@ import net.iozamudioa.fueler.domain.PagedResult;
 
 public interface FuelRecordInputPort {
 
-    FuelRecord create(CreateFuelRecordCommand command);
+        FuelRecord create(CreateFuelRecordCommand command);
 
-    FuelRecord update(UpdateFuelRecordCommand command);
+        FuelRecord update(UpdateFuelRecordCommand command);
 
-    PagedResult<FuelRecordDetail> search(
-            String clientId,
-            FuelRecordSearch criteria);
+        PagedResult<FuelRecordDetail> search(
+                        String clientId,
+                        FuelRecordSearch criteria);
 
-    Optional<FuelPriceSuggestion> findLatestPrice(
-            String clientId,
-            String gasStationReference,
-            String fuelType);
+        Optional<FuelPriceSuggestion> findLatestPrice(
+                        String clientId,
+                        String gasStationReference,
+                        String fuelType,
+                        LocalDate dae);
 
 }
