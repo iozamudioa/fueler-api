@@ -248,23 +248,35 @@ public class FuelRecordPersistenceAdapter implements FuelRecordOutputPort {
                                                 Sort.Order.desc("date"),
                                                 Sort.Order.desc("_id"))));
 
-                operations.add(context -> new Document("$facet",
-                                new Document()
-                                                .append("metadata", List.of(
-                                                                new Document("$count", "total")))
-                                                .append("data", List.of(
-                                                                new Document("$skip",
-                                                                                (long) criteria.page()
-                                                                                                * criteria.size()),
-                                                                new Document("$limit", criteria.size()),
-                                                                lookup("vehicles",
-                                                                                "vehicleReference",
-                                                                                "vehicle"),
-                                                                lookup("operators",
-                                                                                "operatorReference",
-                                                                                "operator"),
-                                                                unwind("vehicle"),
-                                                                unwind("operator")))));
+                operations.add(context -> {
+
+                        List<Document> dataPipeline = new ArrayList<>();
+
+                        dataPipeline.add(new Document("$skip",
+                                        (long) criteria.page() * criteria.size()));
+
+                        dataPipeline.add(new Document("$limit", criteria.size()));
+
+                        dataPipeline.addAll(
+                                        lookup("vehicles", "vehicleReference", "vehicle")
+                                                        .toPipelineStages(context));
+
+                        dataPipeline.addAll(
+                                        lookup("operators", "operatorReference", "operator")
+                                                        .toPipelineStages(context));
+
+                        dataPipeline.addAll(
+                                        unwind("vehicle").toPipelineStages(context));
+
+                        dataPipeline.addAll(
+                                        unwind("operator").toPipelineStages(context));
+
+                        return new Document("$facet",
+                                        new Document()
+                                                        .append("metadata", List.of(
+                                                                        new Document("$count", "total")))
+                                                        .append("data", dataPipeline));
+                });
 
                 Aggregation aggregation = Aggregation.newAggregation(
                                 FuelRecordDocument.class,
