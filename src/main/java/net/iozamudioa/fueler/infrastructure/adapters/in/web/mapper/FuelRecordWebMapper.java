@@ -19,114 +19,115 @@ import net.iozamudioa.fueler.infrastructure.adapters.in.web.model.response.FuelR
 @Component
 public class FuelRecordWebMapper {
 
-    public CreateFuelRecordCommand toCommand(
-            String clientId,
-            String deviceId,
-            CreateFuelRecord request) {
+        public CreateFuelRecordCommand toCommand(
+                        String clientId,
+                        String deviceId,
+                        CreateFuelRecord request) {
 
-        return new CreateFuelRecordCommand(
-                clientId,
-                deviceId,
-                request.requestId(),
-                request.date(),
-                request.vehicleReference(),
-                request.gasStationReference(),
-                request.area(),
-                request.operatorReference(),
-                request.operatorName(),
-                request.tankLevel(),
-                request.distanceKm(),
-                request.odometerKm(),
-                request.ticketNumber(),
-                request.note(),
-                request.fuelType(),
-                request.pricePerLiter(),
-                request.liters());
-    }
+                return new CreateFuelRecordCommand(
+                                clientId,
+                                deviceId,
+                                request.requestId(),
+                                request.date(),
+                                request.vehicleReference(),
+                                request.gasStationReference(),
+                                request.area(),
+                                request.operatorReference(),
+                                request.operatorName(),
+                                request.tankLevel(),
+                                request.distanceKm(),
+                                request.odometerKm(),
+                                request.ticketNumber(),
+                                request.note(),
+                                request.fuelType(),
+                                request.pricePerLiter(),
+                                request.liters());
+        }
 
-    public FuelRecordResponse toResponse(FuelRecord record) {
+        public FuelRecordResponse toResponse(FuelRecord record) {
 
-        return new FuelRecordResponse(
-                record.id(),
-                record.requestId(),
-                record.date(),
-                record.vehicleReference(),
-                record.gasStationReference(),
-                record.area(),
-                record.operatorReference(),
-                record.operatorName(),
-                record.tankLevel(),
-                record.distanceKm(),
-                record.odometerKm(),
-                record.ticketNumber(),
-                record.note(),
-                record.fuelType(),
-                record.pricePerLiter(),
-                record.liters(),
-                record.totalAmount(),
-                record.efficiencyKmPerLiter(),
-                record.createdAt());
-    }
+                return new FuelRecordResponse(
+                                record.id(),
+                                record.requestId(),
+                                record.date(),
+                                record.vehicleReference(),
+                                record.gasStationReference(),
+                                record.area(),
+                                record.operatorReference(),
+                                record.operatorName(),
+                                record.tankLevel(),
+                                record.distanceKm(),
+                                record.odometerKm(),
+                                record.ticketNumber(),
+                                record.note(),
+                                record.fuelType(),
+                                record.pricePerLiter(),
+                                record.liters(),
+                                record.totalAmount(),
+                                record.efficiencyKmPerLiter(),
+                                record.createdAt(),
+                                record.version());
+        }
 
-    public UpdateFuelRecordCommand toUpdateCommand(
-            String id,
-            String clientId,
-            String deviceId,
-            UpdateFuelRecord request) {
+        public UpdateFuelRecordCommand toUpdateCommand(
+                        String id,
+                        String clientId,
+                        String deviceId,
+                        UpdateFuelRecord request) {
 
-        return new UpdateFuelRecordCommand(
-                id,
-                clientId,
-                deviceId,
-                request.date(),
-                request.vehicleReference(),
-                request.gasStationReference(),
-                request.area(),
-                request.operatorReference(),
-                request.operatorName(),
-                request.tankLevel(),
-                request.distanceKm(),
-                request.odometerKm(),
-                request.ticketNumber(),
-                request.note(),
-                request.fuelType(),
-                request.pricePerLiter(),
-                request.liters(),
-                request.reason(),
-                request.version());
-    }
+                return new UpdateFuelRecordCommand(
+                                id,
+                                clientId,
+                                deviceId,
+                                request.date(),
+                                request.vehicleReference(),
+                                request.gasStationReference(),
+                                request.area(),
+                                request.operatorReference(),
+                                request.operatorName(),
+                                request.tankLevel(),
+                                request.distanceKm(),
+                                request.odometerKm(),
+                                request.ticketNumber(),
+                                request.note(),
+                                request.fuelType(),
+                                request.pricePerLiter(),
+                                request.liters(),
+                                request.reason(),
+                                request.version());
+        }
 
-    public FuelRecordDetailResponse toDetailResponse(
-            FuelRecordDetail detail) {
+        public FuelRecordDetailResponse toDetailResponse(
+                        FuelRecordDetail detail) {
 
-        VehicleInfo vehicle = detail.vehicle() == null
-                ? null
-                : new VehicleInfo(
-                        detail.vehicle().reference(),
-                        detail.vehicle().area(),
-                        detail.vehicle().active());
+                VehicleInfo vehicle = detail.vehicle() == null
+                                ? null
+                                : new VehicleInfo(
+                                                detail.vehicle().reference(),
+                                                detail.vehicle().area(),
+                                                detail.vehicle().active());
 
-        OperatorInfo operator = detail.operator() == null
-                ? null
-                : new OperatorInfo(
-                        detail.operator().reference(),
-                        detail.operator().name(),
-                        detail.operator().active());
+                OperatorInfo operator = detail.operator() == null
+                                ? null
+                                : new OperatorInfo(
+                                                detail.operator().reference(),
+                                                detail.operator().name(),
+                                                detail.operator().active());
 
-        return new FuelRecordDetailResponse(
-                toResponse(detail.fuelRecord()),
-                vehicle,
-                operator);
-    }
+                return new FuelRecordDetailResponse(
+                                toResponse(detail.fuelRecord()),
+                                vehicle,
+                                operator);
+        }
 
-    public FuelPriceResponse toPriceResponse(
-            FuelPriceSuggestion suggestion) {
+        public FuelPriceResponse toPriceResponse(
+                        FuelPriceSuggestion suggestion) {
 
-        return new FuelPriceResponse(
-                suggestion.gasStationReference(),
-                suggestion.fuelType(),
-                suggestion.pricePerLiter(),
-                suggestion.date());
-    }
+                return new FuelPriceResponse(
+                                suggestion.gasStationReference(),
+                                suggestion.fuelType(),
+                                suggestion.pricePerLiter(),
+                                suggestion.date());
+        }
 
 }
