@@ -21,7 +21,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import net.iozamudioa.fueler.application.ports.out.ExportFuelRecordOutputPort;
 import net.iozamudioa.fueler.domain.ExportedFile;
@@ -117,28 +120,33 @@ public class FuelRecordExcelAdapter
 
         FuelRecordExportDocument document = repository
                 .findByIdAndClientId(exportId, clientId)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
-                        org.springframework.http.HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
                         "Export not found"));
 
         if (!document.expiresAt().isAfter(Instant.now())) {
-            throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.NOT_FOUND,
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
                     "Export not found");
         }
 
+        Path path = filePath(document.id());
+
         try {
-            byte[] content = Files.readAllBytes(
-                    filePath(document.id()));
+            if (!Files.isRegularFile(path)) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Export not found");
+            }
 
             return new ExportedFile(
                     document.fileName(),
-                    content);
+                    new FileSystemResource(path),
+                    Files.size(path));
 
         } catch (IOException ex) {
-            throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.NOT_FOUND,
-                    "Export not found");
+            throw new IllegalStateException(
+                    "Could not access export file", ex);
         }
     }
 

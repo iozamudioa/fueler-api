@@ -1,6 +1,7 @@
 
 package net.iozamudioa.fueler.infrastructure.adapters.in.web;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,53 +26,54 @@ import net.iozamudioa.fueler.infrastructure.adapters.in.web.model.response.Expor
 @RequestMapping("/api/v1/fuel/report")
 public class FuelRecordExportController {
 
-    private static final MediaType EXCEL_MEDIA_TYPE = MediaType.parseMediaType(
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        private static final MediaType EXCEL_MEDIA_TYPE = MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
-    private final ExportFuelRecordInputPort exportFuelRecordInputPort;
-    private final DownloadFuelRecordInputPort downloadFuelRecordInputPort;
-    private final FuelRecordExportWebMapper mapper;
+        private final ExportFuelRecordInputPort exportFuelRecordInputPort;
+        private final DownloadFuelRecordInputPort downloadFuelRecordInputPort;
+        private final FuelRecordExportWebMapper mapper;
 
-    public FuelRecordExportController(
-            ExportFuelRecordInputPort exportFuelRecordInputPort,
-            DownloadFuelRecordInputPort downloadFuelRecordInputPort,
-            FuelRecordExportWebMapper mapper) {
+        public FuelRecordExportController(
+                        ExportFuelRecordInputPort exportFuelRecordInputPort,
+                        DownloadFuelRecordInputPort downloadFuelRecordInputPort,
+                        FuelRecordExportWebMapper mapper) {
 
-        this.exportFuelRecordInputPort = exportFuelRecordInputPort;
-        this.downloadFuelRecordInputPort = downloadFuelRecordInputPort;
-        this.mapper = mapper;
-    }
+                this.exportFuelRecordInputPort = exportFuelRecordInputPort;
+                this.downloadFuelRecordInputPort = downloadFuelRecordInputPort;
+                this.mapper = mapper;
+        }
 
-    @PostMapping
-    public ResponseEntity<ExportResponse> generate(
-            @AuthenticationPrincipal DevicePrincipal principal,
-            @RequestBody ExportRequest request) {
+        @PostMapping
+        public ResponseEntity<ExportResponse> generate(
+                        @AuthenticationPrincipal DevicePrincipal principal,
+                        @RequestBody ExportRequest request) {
 
-        return ResponseEntity.ok(
-                mapper.toResponse(exportFuelRecordInputPort.generate(
-                        principal.clientId(),
-                        mapper.toSearch(request))));
-    }
+                return ResponseEntity.ok(
+                                mapper.toResponse(exportFuelRecordInputPort.generate(
+                                                principal.clientId(),
+                                                mapper.toSearch(request))));
+        }
 
-    @GetMapping(value = "/{id}", produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    public ResponseEntity<byte[]> download(
-            @AuthenticationPrincipal DevicePrincipal principal,
-            @PathVariable String id) {
+        @GetMapping(value = "/{id}", produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        public ResponseEntity<Resource> download(
+                        @AuthenticationPrincipal DevicePrincipal principal,
+                        @PathVariable String id) {
 
-        ExportedFile file = downloadFuelRecordInputPort.download(
-                principal.clientId(),
-                id);
+                ExportedFile file = downloadFuelRecordInputPort.download(
+                                principal.clientId(),
+                                id);
 
-        return ResponseEntity.ok()
-                .header(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        ContentDisposition.attachment()
-                                .filename(file.fileName())
-                                .build()
-                                .toString())
-                .header(HttpHeaders.CACHE_CONTROL, "no-store")
-                .contentType(EXCEL_MEDIA_TYPE)
-                .contentLength(file.content().length)
-                .body(file.content());
-    }
+                return ResponseEntity.ok()
+                                .header(
+                                                HttpHeaders.CONTENT_DISPOSITION,
+                                                ContentDisposition.attachment()
+                                                                .filename(file.fileName())
+                                                                .build()
+                                                                .toString())
+                                .header(HttpHeaders.CACHE_CONTROL, "no-store")
+                                .contentType(EXCEL_MEDIA_TYPE)
+                                .contentLength(file.size())
+                                .body(file.resource());
+        }
+
 }
