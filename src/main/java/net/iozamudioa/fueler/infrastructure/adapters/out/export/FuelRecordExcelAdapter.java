@@ -268,19 +268,27 @@ public class FuelRecordExcelAdapter
         summary.setColumnWidth(0, 30 * 256);
         summary.setColumnWidth(1, 28 * 256);
 
-        summaryRow(summary, 0, "FUELER - REPORTE", "");
-        summaryRow(summary, 2, "Desde", criteria.from());
-        summaryRow(summary, 3, "Hasta", criteria.to());
-        summaryRow(summary, 4, "Unidad", criteria.vehicleReference());
-        summaryRow(summary, 5, "Operador", criteria.operatorReference());
-        summaryRow(summary, 6, "Área", criteria.area());
-        summaryRow(summary, 8, "Total cargas", records.size());
+        index = 0;
 
-        Row litersRow = summary.createRow(9);
+        summaryRow(summary, index++, "FUELER - REPORTE", "");
+        summaryRow(summary, index++, "Desde", criteria.from());
+        summaryRow(summary, index++, "Hasta", criteria.to());
+        summaryRow(summary, index++, "Unidad", criteria.vehicleReference());
+
+        if (criteria.operatorReference() != null && !criteria.operatorReference().isEmpty()) {
+            summaryRow(summary, index++, "Operador", criteria.operatorReference());
+        }
+        if (criteria.area() != null && !criteria.area().isEmpty()) {
+            summaryRow(summary, index++, "Área", criteria.area());
+        }
+
+        summaryRow(summary, index++, "Total cargas", records.size());
+
+        Row litersRow = summary.createRow(index++);
         litersRow.createCell(0).setCellValue("Total litros");
         number(litersRow, 1, litersTotal, numberStyle);
 
-        Row amountRow = summary.createRow(10);
+        Row amountRow = summary.createRow(index++);
         amountRow.createCell(0).setCellValue("Importe total");
         number(amountRow, 1, amountTotal, numberStyle);
     }
