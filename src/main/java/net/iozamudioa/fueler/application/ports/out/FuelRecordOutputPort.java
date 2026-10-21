@@ -7,6 +7,7 @@ import java.util.Optional;
 import net.iozamudioa.fueler.domain.FuelPriceSuggestion;
 import net.iozamudioa.fueler.domain.FuelRecord;
 import net.iozamudioa.fueler.domain.FuelRecordDetail;
+import net.iozamudioa.fueler.domain.FuelRecordExportSearch;
 import net.iozamudioa.fueler.domain.FuelRecordSearch;
 import net.iozamudioa.fueler.domain.PagedResult;
 
@@ -44,5 +45,9 @@ public interface FuelRecordOutputPort {
                         String gasStationReference,
                         String fuelType,
                         LocalDate date);
+
+        List<FuelRecordDetail> export(
+                        String clientId,
+                        FuelRecordExportSearch criteria);
 
 }

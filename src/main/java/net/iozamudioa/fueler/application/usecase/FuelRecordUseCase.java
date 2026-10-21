@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ import net.iozamudioa.fueler.application.ports.out.GasStationOutputPort;
 import net.iozamudioa.fueler.domain.FuelPriceSuggestion;
 import net.iozamudioa.fueler.domain.FuelRecord;
 import net.iozamudioa.fueler.domain.FuelRecordDetail;
+import net.iozamudioa.fueler.domain.FuelRecordExportSearch;
 import net.iozamudioa.fueler.domain.FuelRecordSearch;
 import net.iozamudioa.fueler.domain.GasStation;
 import net.iozamudioa.fueler.domain.PagedResult;
@@ -204,25 +206,47 @@ public class FuelRecordUseCase implements FuelRecordInputPort {
         }
 
         @Override
-        public Optional<FuelPriceSuggestion> findLatestPrice(
-                        String clientId,
-                        String gasStationReference,
-                        String fuelType,
-                        LocalDate date) {
-
+        public Optional<FuelPriceSuggestion> findLatestPrice(String clientId, String gasStationReference,
+                        String fuelType, LocalDate date) {
                 if (clientId == null || clientId.isBlank()) {
                         throw new IllegalArgumentException("Client ID is required");
                 }
-
                 if (date == null) {
                         throw new IllegalArgumentException("Date is required");
                 }
-
-                return fuelRecordOutputPort.findLatestPrice(
-                                clientId,
+                return fuelRecordOutputPort.findLatestPrice(clientId,
                                 ReferenceNormalizer.normalize(gasStationReference),
-                                ReferenceNormalizer.normalize(fuelType),
-                                date);
+                                ReferenceNormalizer.normalize(fuelType), date);
+        }
+
+        @Override
+        public List<FuelRecordDetail> export(
+                        String clientId,
+                        FuelRecordExportSearch criteria) {
+
+                if (clientId == null || clientId.isBlank()) {
+                        throw new IllegalArgumentException(
+                                        "Client ID is required");
+                }
+
+                if (criteria == null) {
+                        throw new IllegalArgumentException(
+                                        "Export criteria are required");
+                }
+
+                if (criteria.from() == null || criteria.to() == null) {
+                        throw new IllegalArgumentException(
+                                        "Date range is required");
+                }
+
+                if (criteria.from().isAfter(criteria.to())) {
+                        throw new IllegalArgumentException(
+                                        "Invalid date range");
+                }
+
+                return fuelRecordOutputPort.export(
+                                clientId,
+                                criteria);
         }
 
         private String validateGasStation(

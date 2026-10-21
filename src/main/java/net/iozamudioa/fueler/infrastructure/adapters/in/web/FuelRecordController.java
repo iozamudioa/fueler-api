@@ -72,33 +72,19 @@ public class FuelRecordController {
 
         @GetMapping
         public ResponseEntity<PagedResult<FuelRecordDetailResponse>> search(
-                        @AuthenticationPrincipal DevicePrincipal principal,
-
-                        @RequestParam(defaultValue = "0") int page,
+                        @AuthenticationPrincipal DevicePrincipal principal, @RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "20") int size,
-
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-
                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-
                         @RequestParam(required = false) String vehicleReference,
-
                         @RequestParam(required = false) String operatorReference,
-
                         @RequestParam(required = false) String area) {
 
-                FuelRecordSearch criteria = new FuelRecordSearch(
-                                from,
-                                to,
-                                vehicleReference,
-                                operatorReference,
-                                area,
+                FuelRecordSearch criteria = new FuelRecordSearch(from, to, vehicleReference, operatorReference, area,
                                 page,
                                 size);
 
-                var result = fuelRecordInputPort.search(
-                                principal.clientId(),
-                                criteria);
+                var result = fuelRecordInputPort.search(principal.clientId(), criteria);
 
                 var response = PagedResult.of(
                                 result.content()

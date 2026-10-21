@@ -28,6 +28,7 @@ import net.iozamudioa.fueler.application.ports.out.FuelRecordOutputPort;
 import net.iozamudioa.fueler.domain.FuelPriceSuggestion;
 import net.iozamudioa.fueler.domain.FuelRecord;
 import net.iozamudioa.fueler.domain.FuelRecordDetail;
+import net.iozamudioa.fueler.domain.FuelRecordExportSearch;
 import net.iozamudioa.fueler.domain.FuelRecordSearch;
 import net.iozamudioa.fueler.domain.Operator;
 import net.iozamudioa.fueler.domain.PagedResult;
@@ -374,6 +375,84 @@ public class FuelRecordPersistenceAdapter implements FuelRecordOutputPort {
                                                 document.fuelType(),
                                                 document.pricePerLiter(),
                                                 document.date()));
+        }
+
+        @Override
+        public List<FuelRecordDetail> export(
+                        String clientId,
+                        FuelRecordExportSearch criteria) {
+
+                Criteria filter = Criteria.where("clientId").is(clientId)
+                                .and("date")
+                                .gte(criteria.from())
+                                .lte(criteria.to());
+
+                if (criteria.vehicleReference() != null
+                                && !criteria.vehicleReference().isBlank()) {
+                        filter.and("vehicleReference")
+                                        .is(criteria.vehicleReference().trim().toUpperCase());
+                }
+
+                if (criteria.operatorReference() != null
+                                && !criteria.operatorReference().isBlank()) {
+                        filter.and("operatorReference")
+                                        .is(criteria.operatorReference().trim());
+                }
+
+                if (criteria.area() != null
+                                && !criteria.area().isBlank()) {
+                        filter.and("area")
+                                        .is(criteria.area().trim());
+                }
+
+                List<AggregationOperation> operations = new ArrayList<>();
+
+                operations.add(Aggregation.match(filter));
+
+                operations.add(Aggregation.sort(
+                                Sort.by(
+                                                Sort.Order.desc("date"),
+                                                Sort.Order.desc("_id"))));
+
+                operations.add(
+                                lookup("vehicles", "vehicleReference", "vehicle"));
+
+                operations.add(
+                                lookup("operators", "operatorReference", "operator"));
+
+                operations.add(unwind("vehicle"));
+                operations.add(unwind("operator"));
+
+                Aggregation aggregation = Aggregation.newAggregation(
+                                FuelRecordDocument.class,
+                                operations);
+
+                AggregationResults<Document> results = mongoTemplate.aggregate(
+                                aggregation,
+                                "fuel_records",
+                                Document.class);
+
+                List<FuelRecordDetail> records = new ArrayList<>();
+
+                for (Document row : results.getMappedResults()) {
+
+                        FuelRecord fuelRecord = mapFuelRecord(row);
+
+                        Vehicle vehicle = row.get("vehicle") == null
+                                        ? null
+                                        : mapVehicle((Document) row.get("vehicle"));
+
+                        Operator operator = row.get("operator") == null
+                                        ? null
+                                        : mapOperator((Document) row.get("operator"));
+
+                        records.add(new FuelRecordDetail(
+                                        fuelRecord,
+                                        vehicle,
+                                        operator));
+                }
+
+                return records;
         }
 
         private AggregationOperation lookup(
