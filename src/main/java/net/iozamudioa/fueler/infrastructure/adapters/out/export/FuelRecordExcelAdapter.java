@@ -179,11 +179,22 @@ public class FuelRecordExcelAdapter
         Sheet sheet = workbook.createSheet("Cargas");
 
         String[] headers = {
-                "Fecha", "Unidad", "Área", "Operador",
-                "Nombre", "Gasolinera", "Combustible",
-                "Nivel tanque", "Km recorridos", "Odómetro",
-                "Litros", "Precio/L", "Importe",
-                "Rendimiento", "Ticket", "Observaciones"
+                "fecha",
+                "unidad",
+                "area",
+                "operador",
+                "nombre",
+                "nivel",
+                "kmAcumulado",
+                "kmRecorrido",
+                "folio",
+                "nota",
+                "tipo",
+                "precio",
+                "litros",
+                "total",
+                "rendimiento",
+                "gasolinera"
         };
 
         CellStyle headerStyle = workbook.createCellStyle();
@@ -224,22 +235,25 @@ public class FuelRecordExcelAdapter
             text(row, col++, record.area());
             text(row, col++, record.operatorReference());
             text(row, col++, record.operatorName());
-            text(row, col++, record.gasStationReference());
-            text(row, col++, record.fuelType());
             text(row, col++, record.tankLevel());
 
-            number(row, col++, record.distanceKm(), numberStyle);
             number(row, col++, record.odometerKm(), numberStyle);
-            number(row, col++, record.liters(), numberStyle);
-            number(row, col++, record.pricePerLiter(), numberStyle);
-            number(row, col++, record.totalAmount(), numberStyle);
-            number(row, col++, record.efficiencyKmPerLiter(), numberStyle);
+            number(row, col++, record.distanceKm(), numberStyle);
 
             text(row, col++, record.ticketNumber());
             text(row, col++, record.note());
+            text(row, col++, record.fuelType());
+
+            number(row, col++, record.pricePerLiter(), numberStyle);
+            number(row, col++, record.liters(), numberStyle);
+            number(row, col++, record.totalAmount(), numberStyle);
+            number(row, col++, record.efficiencyKmPerLiter(), numberStyle);
+
+            text(row, col++, record.gasStationReference());
 
             litersTotal = litersTotal.add(
                     valueOrZero(record.liters()));
+
             amountTotal = amountTotal.add(
                     valueOrZero(record.totalAmount()));
         }
